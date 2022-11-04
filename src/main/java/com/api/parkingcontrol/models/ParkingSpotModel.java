@@ -7,9 +7,11 @@ import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Type;
 
 @Entity
 @Table(name = "TB_PARKING_SPOT")
@@ -17,7 +19,10 @@ public class ParkingSpotModel implements Serializable{
 	private static final long serialVersionUID = 1L;
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    @Column(name = "uuid", columnDefinition = "char(36)")
+    @Type(type = "org.hibernate.type.UUIDCharType")
 	public UUID id;
 	
 	@Column(nullable = false, unique = true, length = 10)

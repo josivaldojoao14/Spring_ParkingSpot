@@ -38,6 +38,7 @@ public class ParkingSpotController {
 	@Autowired
 	private ParkingSpotService service;
 	
+	
 	@GetMapping
 	public ResponseEntity<Page<ParkingSpotModel>> findAll(@PageableDefault(page=0, size=10, sort="id", direction = Sort.Direction.ASC) Pageable pageable){ 
 		return ResponseEntity.status(HttpStatus.OK).body(service.findAll(pageable));

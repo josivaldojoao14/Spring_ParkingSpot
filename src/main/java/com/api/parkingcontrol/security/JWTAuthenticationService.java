@@ -20,13 +20,13 @@ public class JWTAuthenticationService {
     private final static String HEADER_STRING = "Authorization";
 
     /* Gerando o token JWT e dando a resposta */
-    public void addAuthentication(HttpServletResponse response, String username) throws Exception{
+    public void addAuthentication(HttpServletResponse response, String username) throws Exception {
 
         String JWT = Jwts.builder().setSubject(username)
-            .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-            .signWith(SignatureAlgorithm.HS512, SECRET)
-            .compact();
-        
+                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
+                .signWith(SignatureAlgorithm.HS512, SECRET)
+                .compact();
+
         String token = TOKEN_PREFIX + " " + JWT;
 
         /* Retorna a resposta/token no cabeçalho da requisição */
@@ -36,4 +36,22 @@ public class JWTAuthenticationService {
         response.getWriter().write("{\"Authorization\": \"" + token + "\"}");
     }
 
+    /* Liberação de CORS */
+    private void releaseCors(HttpServletResponse response) {
+        if (response.getHeader("Access-Control-Allow-Origin") == null) {
+            response.addHeader("Access-Control-Allow-Origin", "*");
+        }
+
+        if (response.getHeader("Access-Control-Allow-Headers") == null) {
+            response.addHeader("Access-Control-Allow-Headers", "*");
+        }
+
+        if (response.getHeader("Access-Control-Request-Headers") == null) {
+            response.addHeader("Access-Control-Request-Headers", "*");
+        }
+
+        if (response.getHeader("Access-Control-Allow-Methods") == null) {
+            response.addHeader("Access-Control-Allow-Methods", "*");
+        }
+    }
 }

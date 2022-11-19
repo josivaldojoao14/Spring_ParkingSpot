@@ -8,6 +8,7 @@ import javax.transaction.Transactional;
 
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -36,9 +37,9 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        UserModel user = userRepository.findByUsername(username);
+        UserModel user = userRepository.findByUsername(username).get();
 
-        if(user == null){
+        if (user == null) {
             throw new UsernameNotFoundException("User not found in the database");
         }
 

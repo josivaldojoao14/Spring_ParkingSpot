@@ -10,5 +10,6 @@ import com.api.parkingcontrol.models.UserModel;
 
 @Repository
 public interface UserRepository extends JpaRepository<UserModel, UUID> {
+    
     Optional<UserModel> findByUsername(String username);
 }

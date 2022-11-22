@@ -8,6 +8,10 @@ import java.util.stream.Collectors;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,8 +23,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.api.parkingcontrol.dtos.AuthResponseDto;
 import com.api.parkingcontrol.dtos.UserDto;
+import com.api.parkingcontrol.dtos.UserLoginDto;
 import com.api.parkingcontrol.models.UserModel;
+import com.api.parkingcontrol.security.JWTGenerator;
 import com.api.parkingcontrol.services.UserService;
 import com.api.parkingcontrol.util.URL;
 
@@ -33,7 +40,9 @@ import lombok.Data;
 @AllArgsConstructor
 public class UserController {
 
+    private final AuthenticationManager authenticationManager;
     private final UserService userService;
+    private final JWTGenerator jwtGenerator;
 
     @GetMapping(value = "/users")
     public ResponseEntity<List<UserDto>> findAllUsers() {
@@ -51,12 +60,31 @@ public class UserController {
         return ResponseEntity.ok().body(new UserDto(userModel.get()));
     }
 
-    @PostMapping(value = "/user")
-    public ResponseEntity<UserDto> saveUser(@RequestBody UserDto userDto) {
+    @PostMapping(value = "/auth/user/register")
+    public ResponseEntity<?> register(@RequestBody UserDto userDto) {
+        Optional<UserModel> userExist = userService.findByUsername(userDto.getUsername());
+        if (userExist.isPresent()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Username is already taken!");
+        }
+
         UserModel obj = new UserModel();
         BeanUtils.copyProperties(userDto, obj);
         userService.saveUser(obj);
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @PostMapping(value = "/auth/user/login")
+    public ResponseEntity<AuthResponseDto> login(@RequestBody UserLoginDto userLoginDto) {
+        Authentication authentication = authenticationManager.authenticate(
+            new UsernamePasswordAuthenticationToken(
+                userLoginDto.getUsername(), 
+                userLoginDto.getPassword()
+            )
+        );
+        
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        String token = jwtGenerator.generateToken(authentication);
+        return ResponseEntity.status(HttpStatus.OK).body(new AuthResponseDto(token));
     }
 
     @PutMapping(value = "/user/{id}")

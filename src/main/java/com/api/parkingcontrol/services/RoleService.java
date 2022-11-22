@@ -14,4 +14,6 @@ public interface RoleService {
     RoleModel saveRole(RoleModel role);
 
     void deleteRole(UUID id);
+
+    RoleModel findByName(String roleName);
 }

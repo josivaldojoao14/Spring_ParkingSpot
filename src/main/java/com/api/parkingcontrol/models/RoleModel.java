@@ -12,8 +12,6 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 import org.springframework.security.core.GrantedAuthority;
 
-import com.api.parkingcontrol.enums.RoleName;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,7 +20,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "TB_ROLE_MODEL")
+@Table(name = "TB_ROLES")
 public class RoleModel implements GrantedAuthority {
 
     @Id
@@ -33,10 +31,10 @@ public class RoleModel implements GrantedAuthority {
     private UUID id;
 
     @Column(nullable = false, length = 40, unique = true)
-    private RoleName roleName;
+    private String name;
 
     @Override
     public String getAuthority() {
-        return this.roleName.toString();
+        return this.name;
     }
 }

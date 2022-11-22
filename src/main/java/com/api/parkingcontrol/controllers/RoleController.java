@@ -49,7 +49,12 @@ public class RoleController {
     }
 
     @PostMapping(value = "/role")
-    public ResponseEntity<RoleDto> saveRole(@RequestBody RoleDto roleDto) {
+    public ResponseEntity<?> saveRole(@RequestBody RoleDto roleDto) {
+        RoleModel roleExist = roleService.findByName(roleDto.getName());
+        if(roleExist != null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Role name already exists!");
+        }
+        
         RoleModel obj = new RoleModel();
         BeanUtils.copyProperties(roleDto, obj);
         roleService.saveRole(obj);

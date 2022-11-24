@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import javax.transaction.Transactional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -25,8 +26,10 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    
+    @Autowired
     private final PasswordEncoder passwordEncoder;
-
+    
     public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository,
             @Lazy PasswordEncoder passwordEncoder) {
         super();

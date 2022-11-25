@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.api.parkingcontrol.models.RoleModel;
 import com.api.parkingcontrol.repositories.RoleRepository;
+import com.api.parkingcontrol.services.interfaces.RoleService;
 
 @Service
 public class RoleServiceImpl implements RoleService {

@@ -1,4 +1,4 @@
-package com.api.parkingcontrol.services;
+package com.api.parkingcontrol.services.interfaces;
 
 import java.util.List;
 import java.util.Optional;

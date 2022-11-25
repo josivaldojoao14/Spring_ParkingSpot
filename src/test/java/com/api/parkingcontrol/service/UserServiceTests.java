@@ -181,5 +181,4 @@ public class UserServiceTests {
         Assertions.assertThat(user.getRoles().stream().filter(x -> x.getName()
             .equals(role.getName())).findFirst().get().getName()).isEqualTo(role.getName());
     }
-    
 }

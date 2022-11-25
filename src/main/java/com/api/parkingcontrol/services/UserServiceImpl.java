@@ -19,6 +19,7 @@ import com.api.parkingcontrol.models.RoleModel;
 import com.api.parkingcontrol.models.UserModel;
 import com.api.parkingcontrol.repositories.RoleRepository;
 import com.api.parkingcontrol.repositories.UserRepository;
+import com.api.parkingcontrol.services.interfaces.UserService;
 
 @Service
 @Transactional

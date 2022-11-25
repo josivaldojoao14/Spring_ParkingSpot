@@ -28,7 +28,7 @@ import com.api.parkingcontrol.dtos.UserDto;
 import com.api.parkingcontrol.dtos.UserLoginDto;
 import com.api.parkingcontrol.models.UserModel;
 import com.api.parkingcontrol.security.JWTGenerator;
-import com.api.parkingcontrol.services.UserService;
+import com.api.parkingcontrol.services.interfaces.UserService;
 import com.api.parkingcontrol.util.URL;
 
 import lombok.AllArgsConstructor;

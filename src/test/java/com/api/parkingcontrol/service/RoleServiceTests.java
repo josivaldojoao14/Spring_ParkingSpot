@@ -10,7 +10,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.assertj.core.api.Assertions;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -33,13 +34,18 @@ public class RoleServiceTests {
     @InjectMocks
     private RoleServiceImpl roleService;
 
+    private RoleModel role;
+    private RoleModel role2;
+
+    @BeforeEach
+    public void init() {
+        role = RoleModel.builder().name("ADMIN").build();
+        role2 = RoleModel.builder().name("USER").build();
+    }
+
     @Test
     public void RoleService_Create_ReturnsRole() {
         // Arrange
-        RoleModel role = RoleModel.builder()
-            .name("ADMIN")
-            .build();
-
         when(roleRepository.save(Mockito.any(RoleModel.class))).thenReturn(role);
 
         // Act
@@ -53,18 +59,10 @@ public class RoleServiceTests {
     @Test
     public void RoleService_FindAll_ReturnsMoreThanOneRole() {
         // Arrange
-        RoleModel role = RoleModel.builder()
-            .name("ADMIN_1")
-            .build();
-
-        RoleModel role2 = RoleModel.builder()
-            .name("USER")
-            .build();
-
         List<RoleModel> roles = new ArrayList<>(Arrays.asList(role, role2));
 
         // Act
-        when(roleRepository.findAll()).thenReturn(roles);
+        Mockito.lenient().when(roleRepository.findAll()).thenReturn(roles);
 
         // Assert
         Assertions.assertThat(roles).isNotNull();
@@ -76,11 +74,7 @@ public class RoleServiceTests {
     public void RoleService_FindById_ReturnsRole() {
         // Arrange
         UUID id = UUID.randomUUID();
-        RoleModel role = RoleModel.builder()
-            .name("ADMIN_2")
-            .build();
         role.setId(id);
-
         when(roleRepository.findById(id)).thenReturn(Optional.ofNullable(role));
 
         // Act
@@ -95,9 +89,6 @@ public class RoleServiceTests {
     public void RoleService_DeleteById_ReturnsVoid() {
         // Arrange
         UUID id = UUID.randomUUID();
-        RoleModel role = RoleModel.builder()
-            .name("ADMIN_3")
-            .build();
         role.setId(id);
 
         // Act
@@ -110,10 +101,6 @@ public class RoleServiceTests {
     @Test
     public void RoleService_FindByRolename_ReturnsRole() {
         // Arrange
-        RoleModel role = RoleModel.builder()
-            .name("USER_1")
-            .build();
-
         when(roleRepository.findByName(role.getName())).thenReturn(role);
 
         // Act
@@ -122,5 +109,5 @@ public class RoleServiceTests {
         // Assert
         Assertions.assertThat(savedRole).isNotNull();
         Assertions.assertThat(savedRole.getName()).isEqualTo(role.getName());
-    } 
+    }
 }

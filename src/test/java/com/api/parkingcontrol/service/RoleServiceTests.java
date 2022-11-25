@@ -10,14 +10,12 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.api.parkingcontrol.models.RoleModel;
@@ -25,7 +23,6 @@ import com.api.parkingcontrol.repositories.RoleRepository;
 import com.api.parkingcontrol.services.RoleServiceImpl;
 
 @ExtendWith(MockitoExtension.class)
-@RunWith(MockitoJUnitRunner.Silent.class)
 public class RoleServiceTests {
 
     @Mock

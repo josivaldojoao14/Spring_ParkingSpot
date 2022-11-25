@@ -12,13 +12,12 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.assertj.core.api.Assertions;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.api.parkingcontrol.models.ParkingSpotModel;
@@ -26,7 +25,6 @@ import com.api.parkingcontrol.repositories.ParkingSpotRepository;
 import com.api.parkingcontrol.services.ParkingSpotService;
 
 @ExtendWith(MockitoExtension.class)
-@RunWith(MockitoJUnitRunner.Silent.class)
 public class ParkingSpotServiceTests {
 
     @Mock
@@ -35,21 +33,39 @@ public class ParkingSpotServiceTests {
     @InjectMocks
     private ParkingSpotService parkingSpotService;
 
+    private ParkingSpotModel parkingSpot;
+    private ParkingSpotModel parkingSpot2;
+
+    @BeforeEach
+    public void init() {
+        parkingSpot = ParkingSpotModel.builder()
+                .parkingSpotNumber("7482a")
+                .licensePlateCar("PGT5321")
+                .brandCar("Volkswagen")
+                .modelCar("Virtus")
+                .colorCar("Black")
+                .responsibleName("Joao")
+                .registrationDate(LocalDateTime.now(ZoneId.of("UTC")))
+                .apartment("445")
+                .block("A")
+                .build();
+
+        parkingSpot2 = ParkingSpotModel.builder()
+                .parkingSpotNumber("7563b")
+                .licensePlateCar("WST4273")
+                .brandCar("Fiat")
+                .modelCar("Toro")
+                .colorCar("Red")
+                .responsibleName("Maria")
+                .registrationDate(LocalDateTime.now(ZoneId.of("UTC")))
+                .apartment("321")
+                .block("B")
+                .build();
+    }
+
     @Test
     public void ParkingSpotService_Create_ReturnsParkingSpot() {
         // Arrange
-        ParkingSpotModel parkingSpot = ParkingSpotModel.builder()
-            .parkingSpotNumber("7482a")
-            .licensePlateCar("PGT5321")
-            .brandCar("Volkswagen")
-            .modelCar("Virtus")
-            .colorCar("Black")
-            .responsibleName("Joao")
-            .registrationDate(LocalDateTime.now(ZoneId.of("UTC")))
-            .apartment("445")
-            .block("A")
-            .build();
-
         when(parkingSpotRepository.save(Mockito.any(ParkingSpotModel.class))).thenReturn(parkingSpot);
 
         // Act
@@ -63,34 +79,10 @@ public class ParkingSpotServiceTests {
     @Test
     public void ParkingSpotService_FindAll_ReturnsMoreThanOneParkingSpot() {
         // Arrange
-        ParkingSpotModel parkingSpot = ParkingSpotModel.builder()
-            .parkingSpotNumber("7482a")
-            .licensePlateCar("PGT5321")
-            .brandCar("Volkswagen")
-            .modelCar("Virtus")
-            .colorCar("Black")
-            .responsibleName("Joao")
-            .registrationDate(LocalDateTime.now(ZoneId.of("UTC")))
-            .apartment("445")
-            .block("A")
-            .build();
-
-        ParkingSpotModel parkingSpot2 = ParkingSpotModel.builder()
-            .parkingSpotNumber("7563b")
-            .licensePlateCar("WST4273")
-            .brandCar("Fiat")
-            .modelCar("Toro")
-            .colorCar("Red")
-            .responsibleName("Maria")
-            .registrationDate(LocalDateTime.now(ZoneId.of("UTC")))
-            .apartment("321")
-            .block("B")
-            .build();
-
         List<ParkingSpotModel> parkingSpots = new ArrayList<>(Arrays.asList(parkingSpot, parkingSpot2));
 
         // Act
-        when(parkingSpotRepository.findAll()).thenReturn(parkingSpots);
+        Mockito.lenient().when(parkingSpotRepository.findAll()).thenReturn(parkingSpots);
 
         // Assert
         Assertions.assertThat(parkingSpots).isNotNull();
@@ -102,17 +94,6 @@ public class ParkingSpotServiceTests {
     public void ParkingSpotService_FindById_ReturnsParkingSpot() {
         // Arrange
         UUID id = UUID.randomUUID();
-        ParkingSpotModel parkingSpot = ParkingSpotModel.builder()
-            .parkingSpotNumber("7563q")
-            .licensePlateCar("WSB4273")
-            .brandCar("Fiat")
-            .modelCar("Toro")
-            .colorCar("Red")
-            .responsibleName("Maria")
-            .registrationDate(LocalDateTime.now(ZoneId.of("UTC")))
-            .apartment("321")
-            .block("B")
-            .build();
         parkingSpot.setId(id);
 
         when(parkingSpotRepository.findById(id)).thenReturn(Optional.ofNullable(parkingSpot));
@@ -129,21 +110,10 @@ public class ParkingSpotServiceTests {
     public void ParkingSpotService_Delete_ReturnsVoid() {
         // Arrange
         UUID id = UUID.randomUUID();
-        ParkingSpotModel parkingSpot = ParkingSpotModel.builder()
-            .parkingSpotNumber("6563q")
-            .licensePlateCar("TSB3273")
-            .brandCar("Fiat")
-            .modelCar("Toro")
-            .colorCar("Red")
-            .responsibleName("Maria")
-            .registrationDate(LocalDateTime.now(ZoneId.of("UTC")))
-            .apartment("321")
-            .block("B")
-            .build();
         parkingSpot.setId(id);
 
         // Act
-        when(parkingSpotRepository.findById(id)).thenReturn(Optional.ofNullable(parkingSpot));
+        Mockito.lenient().when(parkingSpotRepository.findById(id)).thenReturn(Optional.ofNullable(parkingSpot));
 
         // Assert
         assertAll(() -> parkingSpotService.delete(parkingSpot));
@@ -152,18 +122,6 @@ public class ParkingSpotServiceTests {
     @Test
     public void ParkingSpotRepository_ExistsByLicensePlateCar_ReturnABoolean() {
         // Arrange
-        ParkingSpotModel parkingSpot = ParkingSpotModel.builder()
-            .parkingSpotNumber("7563t")
-            .licensePlateCar("WST4476")
-            .brandCar("Fiat")
-            .modelCar("Toro")
-            .colorCar("Red")
-            .responsibleName("Maria")
-            .registrationDate(LocalDateTime.now(ZoneId.of("UTC")))
-            .apartment("321")
-            .block("B")
-            .build();
-
         when(parkingSpotRepository.existsByLicensePlateCar(parkingSpot.getLicensePlateCar())).thenReturn(true);
 
         // Act
@@ -176,18 +134,6 @@ public class ParkingSpotServiceTests {
     @Test
     public void ParkingSpotRepository_ExistsByParkingSpotNumber_ReturnABoolean() {
         // Arrange
-        ParkingSpotModel parkingSpot = ParkingSpotModel.builder()
-            .parkingSpotNumber("7563y")
-            .licensePlateCar("WST4270")
-            .brandCar("Fiat")
-            .modelCar("Toro")
-            .colorCar("Red")
-            .responsibleName("Maria")
-            .registrationDate(LocalDateTime.now(ZoneId.of("UTC")))
-            .apartment("321")
-            .block("B")
-            .build();
-
         when(parkingSpotRepository.existsByParkingSpotNumber(parkingSpot.getParkingSpotNumber())).thenReturn(true);
 
         // Act
@@ -200,19 +146,8 @@ public class ParkingSpotServiceTests {
     @Test
     public void ParkingSpotRepository_ExistsByApartmentAndBlock_ReturnABoolean() {
         // Arrange
-        ParkingSpotModel parkingSpot = ParkingSpotModel.builder()
-            .parkingSpotNumber("7563y")
-            .licensePlateCar("WST4270")
-            .brandCar("Fiat")
-            .modelCar("Toro")
-            .colorCar("Red")
-            .responsibleName("Maria")
-            .registrationDate(LocalDateTime.now(ZoneId.of("UTC")))
-            .apartment("321")
-            .block("B")
-            .build();
-
-        when(parkingSpotRepository.existsByApartmentAndBlock(parkingSpot.getApartment(), parkingSpot.getBlock())).thenReturn(true);
+        when(parkingSpotRepository.existsByApartmentAndBlock(parkingSpot.getApartment(), parkingSpot.getBlock()))
+                .thenReturn(true);
 
         // Act
         boolean bool = parkingSpotService.existsByApartmentAndBlock(parkingSpot.getApartment(), parkingSpot.getBlock());

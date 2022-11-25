@@ -1,6 +1,7 @@
 package com.api.parkingcontrol.service;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -10,13 +11,12 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.assertj.core.api.Assertions;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -27,9 +27,8 @@ import com.api.parkingcontrol.repositories.UserRepository;
 import com.api.parkingcontrol.services.UserServiceImpl;
 
 @ExtendWith(MockitoExtension.class)
-@RunWith(MockitoJUnitRunner.Silent.class)
 public class UserServiceTests {
-    
+
     @Mock
     private UserRepository userRepository;
 
@@ -42,19 +41,33 @@ public class UserServiceTests {
     @InjectMocks
     private UserServiceImpl userService;
 
-    @Test
-    public void UserService_Create_ReturnsUser(){
-        // Arrange
-        UserModel user = UserModel.builder()
+    private UserModel user;
+    private UserModel user2;
+
+    @BeforeEach
+    public void init() {
+        user = UserModel.builder()
             .fullName("Josivaldo Joao")
             .username("josivaldo55")
             .password("senha123")
             .phone("98672345")
+            .roles(new ArrayList<>())
             .build();
 
+        user2 = UserModel.builder()
+            .fullName("Maria Jose")
+            .username("maria")
+            .password("senha123")
+            .phone("98942354")
+            .build();
+    }
+
+    @Test
+    public void UserService_Create_ReturnsUser() {
+        // Arrange
         user.setPassword(bcrypt.encode(user.getPassword()));
         when(userRepository.save(Mockito.any(UserModel.class))).thenReturn(user);
-        
+
         // Act
         UserModel savedUser = userService.saveUser(user);
 
@@ -64,26 +77,12 @@ public class UserServiceTests {
     }
 
     @Test
-    public void UserService_FindAll_ReturnsMoreThanOneUser(){
+    public void UserService_FindAll_ReturnsMoreThanOneUser() {
         // Arrange
-        UserModel user = UserModel.builder()
-            .fullName("Josivaldo Joao")
-            .username("josivaldo55")
-            .password("senha123")
-            .phone("98672345")
-            .build();
-
-        UserModel user2 = UserModel.builder()
-            .fullName("Maria Jose")
-            .username("maria")
-            .password("senha123")
-            .phone("98942354")
-            .build();
-
         List<UserModel> users = new ArrayList<>(Arrays.asList(user, user2));
 
         // Act
-        when(userRepository.findAll()).thenReturn(users);
+        lenient().when(userRepository.findAll()).thenReturn(users);
 
         // Assert
         Assertions.assertThat(users).isNotNull();
@@ -95,12 +94,6 @@ public class UserServiceTests {
     public void UserService_FindById_ReturnsUser() {
         // Arrange
         UUID id = UUID.randomUUID();
-        UserModel user = UserModel.builder()
-            .fullName("Josivaldo Joao") 
-            .username("josivaldo55")
-            .password("senha123")
-            .phone("98672345")
-            .build();
         user.setId(id);
 
         when(userRepository.findById(id)).thenReturn(Optional.ofNullable(user));
@@ -117,12 +110,6 @@ public class UserServiceTests {
     public void UserService_DeleteById_ReturnsVoid() {
         // Arrange
         UUID id = UUID.randomUUID();
-        UserModel user = UserModel.builder()
-                .fullName("Josivaldo Joao")
-                .username("josivaldo55")
-                .password("senha123")
-                .phone("98672345")
-                .build();
         user.setId(id);
 
         // Act
@@ -135,13 +122,6 @@ public class UserServiceTests {
     @Test
     public void UserService_FindByUsername_ReturnsUser() {
         // Arrange
-        UserModel user = UserModel.builder()
-            .fullName("Josivaldo Joao")
-            .username("josivaldo55")
-            .password("senha123")
-            .phone("98672345")
-            .build();
-
         when(userRepository.findByUsername(user.getUsername())).thenReturn(Optional.ofNullable(user));
 
         // Act
@@ -155,21 +135,13 @@ public class UserServiceTests {
     @Test
     public void UserService_AddRoleToUser_ReturnsVoid() {
         // Arrange
-        UserModel user = UserModel.builder()
-            .fullName("Josivaldo Joao")
-            .username("josivaldo55")
-            .password("senha123")
-            .phone("98672345")
-            .roles(new ArrayList<>())
-            .build();
-
         RoleModel role = RoleModel.builder()
             .name("ADMIN")
             .build();
 
-        when(roleRepository.save(Mockito.any(RoleModel.class))).thenReturn(role);
-        when(userRepository.findByUsername(user.getUsername())).thenReturn(Optional.ofNullable(user));
-        when(roleRepository.findByName(role.getName())).thenReturn(role);
+        lenient().when(roleRepository.save(Mockito.any(RoleModel.class))).thenReturn(role);
+        lenient().when(userRepository.findByUsername(user.getUsername())).thenReturn(Optional.ofNullable(user));
+        lenient().when(roleRepository.findByName(role.getName())).thenReturn(role);
 
         // Act
         userService.addRoleToUser(user.getUsername(), role.getName());
@@ -179,6 +151,6 @@ public class UserServiceTests {
         Assertions.assertThat(user.getRoles()).isNotEmpty();
         Assertions.assertThat(user.getRoles().size()).isGreaterThan(0);
         Assertions.assertThat(user.getRoles().stream().filter(x -> x.getName()
-            .equals(role.getName())).findFirst().get().getName()).isEqualTo(role.getName());
+                .equals(role.getName())).findFirst().get().getName()).isEqualTo(role.getName());
     }
 }

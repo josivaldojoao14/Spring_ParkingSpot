@@ -28,7 +28,7 @@ import com.api.parkingcontrol.dtos.UserDto;
 import com.api.parkingcontrol.dtos.UserLoginDto;
 import com.api.parkingcontrol.models.UserModel;
 import com.api.parkingcontrol.security.JWTGenerator;
-import com.api.parkingcontrol.services.interfaces.UserService;
+import com.api.parkingcontrol.services.UserServiceImpl;
 import com.api.parkingcontrol.util.URL;
 
 import lombok.AllArgsConstructor;
@@ -40,9 +40,9 @@ import lombok.Data;
 @AllArgsConstructor
 public class UserController {
 
-    private final AuthenticationManager authenticationManager;
-    private final UserService userService;
-    private final JWTGenerator jwtGenerator;
+    private AuthenticationManager authenticationManager;
+    private UserServiceImpl userService;
+    private JWTGenerator jwtGenerator;
 
     @GetMapping(value = "/users")
     public ResponseEntity<List<UserDto>> findAllUsers() {
@@ -76,12 +76,10 @@ public class UserController {
     @PostMapping(value = "/auth/user/login")
     public ResponseEntity<AuthResponseDto> login(@RequestBody UserLoginDto userLoginDto) {
         Authentication authentication = authenticationManager.authenticate(
-            new UsernamePasswordAuthenticationToken(
-                userLoginDto.getUsername(), 
-                userLoginDto.getPassword()
-            )
-        );
-        
+                new UsernamePasswordAuthenticationToken(
+                        userLoginDto.getUsername(),
+                        userLoginDto.getPassword()));
+
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String token = jwtGenerator.generateToken(authentication);
         return ResponseEntity.status(HttpStatus.OK).body(new AuthResponseDto(token));

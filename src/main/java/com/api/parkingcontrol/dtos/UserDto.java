@@ -7,10 +7,14 @@ import java.util.stream.Collectors;
 
 import com.api.parkingcontrol.models.UserModel;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
+@AllArgsConstructor
+@Builder
 @NoArgsConstructor
 public class UserDto {
 

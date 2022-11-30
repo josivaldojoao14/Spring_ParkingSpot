@@ -1,8 +1,9 @@
-package com.api.parkingcontrol.services;
+package com.api.parkingcontrol.services.impl;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
@@ -15,10 +16,12 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.api.parkingcontrol.dtos.UserDto;
 import com.api.parkingcontrol.models.RoleModel;
 import com.api.parkingcontrol.models.UserModel;
 import com.api.parkingcontrol.repositories.RoleRepository;
 import com.api.parkingcontrol.repositories.UserRepository;
+import com.api.parkingcontrol.services.exceptions.UserNotFoundException;
 import com.api.parkingcontrol.services.interfaces.UserService;
 
 @Service
@@ -27,10 +30,10 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
-    
+
     @Autowired
     private final PasswordEncoder passwordEncoder;
-    
+
     public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository,
             @Lazy PasswordEncoder passwordEncoder) {
         super();
@@ -42,7 +45,6 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         UserModel user = userRepository.findByUsername(username).get();
-
         if (user == null) {
             throw new UsernameNotFoundException("User not found in the database");
         }
@@ -51,21 +53,41 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     }
 
     @Override
-    public List<UserModel> findAll() {
-        return userRepository.findAll();
+    public List<UserDto> findAll() {
+        List<UserModel> userModels = userRepository.findAll();
+        List<UserDto> listUsersDto = userModels.stream().map(x -> new UserDto(x)).collect(Collectors.toList());
+        return listUsersDto;
     }
 
     @Override
-    public Optional<UserModel> findUserById(UUID id) {
-        Optional<UserModel> user = userRepository.findById(id);
-        return user;
+    public UserDto findUserById(UUID id) {
+        UserModel user = userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("User not found in the database"));
+        return new UserDto(user);
     }
 
-    @Transactional
     @Override
-    public UserModel saveUser(UserModel user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return userRepository.save(user);
+    public UserDto createUser(UserDto user) {
+        UserModel userModel = new UserModel();
+        userModel.setFullName(user.getFullName());
+        userModel.setUsername(user.getUsername());
+        userModel.setPassword(passwordEncoder.encode(user.getPassword()));
+        userModel.setPhone(user.getPhone());
+
+        UserModel newUser = userRepository.save(userModel);
+        return new UserDto(newUser);
+    }
+
+    @Override
+    public UserDto updateUser(UserDto user, UUID id) {
+        UserDto userDto = findUserById(id);
+        userDto.setFullName(user.getFullName());
+        userDto.setUsername(user.getUsername());
+        userDto.setPassword(passwordEncoder.encode(user.getPassword()));
+        userDto.setPhone(user.getPhone());
+
+        UserModel updatedUser = userRepository.save(new UserModel(userDto));
+        return new UserDto(updatedUser);
     }
 
     @Override
@@ -75,16 +97,17 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     }
 
     @Override
-    public Optional<UserModel> findByUsername(String username) {
-        Optional<UserModel> user = userRepository.findByUsername(username);
-        return user;
+    public UserDto findByUsername(String username) {
+        UserModel userModel = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UserNotFoundException("User not found in the database"));
+        return new UserDto(userModel);
     }
 
     @Override
     public void addRoleToUser(String username, String roleName) {
-        Optional<UserModel> user = userRepository.findByUsername(username);
+        Optional<UserModel> userModel = userRepository.findByUsername(username);
         RoleModel role = roleRepository.findByName(roleName);
-        user.get().getRoles().add(role);
-        userRepository.save(user.get());
+        userModel.get().getRoles().add(role);
+        userRepository.save(userModel.get());
     }
 }

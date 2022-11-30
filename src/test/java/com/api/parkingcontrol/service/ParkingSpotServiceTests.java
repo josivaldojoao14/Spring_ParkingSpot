@@ -22,7 +22,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.api.parkingcontrol.models.ParkingSpotModel;
 import com.api.parkingcontrol.repositories.ParkingSpotRepository;
-import com.api.parkingcontrol.services.ParkingSpotService;
+import com.api.parkingcontrol.services.impl.ParkingSpotServiceImpl;
 
 @ExtendWith(MockitoExtension.class)
 public class ParkingSpotServiceTests {
@@ -31,7 +31,7 @@ public class ParkingSpotServiceTests {
     private ParkingSpotRepository parkingSpotRepository;
 
     @InjectMocks
-    private ParkingSpotService parkingSpotService;
+    private ParkingSpotServiceImpl parkingSpotService;
 
     private ParkingSpotModel parkingSpot;
     private ParkingSpotModel parkingSpot2;

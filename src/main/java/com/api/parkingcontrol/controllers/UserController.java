@@ -1,11 +1,8 @@
 package com.api.parkingcontrol.controllers;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
-import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -21,18 +18,18 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.api.parkingcontrol.dtos.AuthResponseDto;
 import com.api.parkingcontrol.dtos.UserDto;
 import com.api.parkingcontrol.dtos.UserLoginDto;
-import com.api.parkingcontrol.models.UserModel;
+import com.api.parkingcontrol.models.form.RoleToUserForm;
 import com.api.parkingcontrol.security.JWTGenerator;
-import com.api.parkingcontrol.services.UserServiceImpl;
+import com.api.parkingcontrol.services.impl.UserServiceImpl;
 import com.api.parkingcontrol.util.URL;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
 
 @RestController
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -46,39 +43,36 @@ public class UserController {
 
     @GetMapping(value = "/users")
     public ResponseEntity<List<UserDto>> findAllUsers() {
-        List<UserModel> listUserModel = userService.findAll();
-        List<UserDto> listUsersDto = listUserModel.stream().map(x -> new UserDto(x)).collect(Collectors.toList());
-        return ResponseEntity.ok().body(listUsersDto);
+        List<UserDto> listUserDto = userService.findAll();
+        return ResponseEntity.ok().body(listUserDto);
     }
 
     @GetMapping(value = "/user/{id}")
     public ResponseEntity<?> findUserById(@PathVariable UUID id) {
-        Optional<UserModel> userModel = userService.findUserById(id);
-        if (!userModel.isPresent()) {
+        UserDto user = userService.findUserById(id);
+        if (user == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found!");
         }
-        return ResponseEntity.ok().body(new UserDto(userModel.get()));
+        return ResponseEntity.ok().body(user);
     }
 
     @PostMapping(value = "/auth/user/register")
+    @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<?> register(@RequestBody UserDto userDto) {
-        Optional<UserModel> userExist = userService.findByUsername(userDto.getUsername());
-        if (userExist.isPresent()) {
+        UserDto user = userService.findByUsername(userDto.getUsername());
+        if (user != null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Username is already taken!");
         }
-
-        UserModel obj = new UserModel();
-        BeanUtils.copyProperties(userDto, obj);
-        userService.saveUser(obj);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        UserDto userCreated = userService.createUser(userDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(userCreated);
     }
 
     @PostMapping(value = "/auth/user/login")
     public ResponseEntity<AuthResponseDto> login(@RequestBody UserLoginDto userLoginDto) {
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        userLoginDto.getUsername(),
-                        userLoginDto.getPassword()));
+            new UsernamePasswordAuthenticationToken(
+                userLoginDto.getUsername(),
+                userLoginDto.getPassword()));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String token = jwtGenerator.generateToken(authentication);
@@ -87,38 +81,22 @@ public class UserController {
 
     @PutMapping(value = "/user/{id}")
     public ResponseEntity<?> updateUser(@RequestBody UserDto userDto, @PathVariable UUID id) {
-        Optional<UserModel> originalUser = userService.findUserById(id);
-        if (!originalUser.isPresent()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found!");
-        }
-
-        UserModel obj = new UserModel();
-        BeanUtils.copyProperties(userDto, obj);
-        obj.setId(originalUser.get().getId());
-        obj = userService.saveUser(obj);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        UserDto userUpdated = userService.updateUser(userDto, id);
+        return ResponseEntity.status(HttpStatus.OK).body(userUpdated);
     }
 
     @DeleteMapping(value = "/user/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable UUID id) {
-        Optional<UserModel> userModel = userService.findUserById(id);
-        if (!userModel.isPresent()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found!");
-        }
-
-        userService.deleteUser(userModel.get().getId());
+        UserDto user = userService.findUserById(id);
+        userService.deleteUser(user.getId());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @GetMapping(value = "/user/findByUsername")
     public ResponseEntity<?> findByUsername(@RequestParam(value = "username") String username) {
         username = URL.decodeParam(username);
-        Optional<UserModel> obj = userService.findByUsername(username);
-        if (!obj.isPresent()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Username not found!");
-        }
-
-        return ResponseEntity.ok().body(new UserDto(obj.get()));
+        UserDto user = userService.findByUsername(username);
+        return ResponseEntity.ok().body(user);
     }
 
     @PostMapping(value = "/user/addRoleToUser")
@@ -129,10 +107,4 @@ public class UserController {
         userService.addRoleToUser(form.getUsername(), form.getRoleName());
         return ResponseEntity.noContent().build();
     }
-}
-
-@Data
-class RoleToUserForm {
-    private String username;
-    private String roleName;
 }

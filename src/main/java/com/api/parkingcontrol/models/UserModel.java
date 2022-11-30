@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -21,6 +22,8 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
+import com.api.parkingcontrol.dtos.UserDto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -60,6 +63,15 @@ public class UserModel implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return this.roles;
+    }
+
+    public UserModel(UserDto obj) {
+        id = obj.getId();
+        fullName = obj.getFullName();
+        phone = obj.getPhone();
+        username = obj.getUsername();
+        password = obj.getPassword();
+        roles = obj.getRoles().stream().map(x -> new RoleModel(x)).collect(Collectors.toList());
     }
 
     @Override

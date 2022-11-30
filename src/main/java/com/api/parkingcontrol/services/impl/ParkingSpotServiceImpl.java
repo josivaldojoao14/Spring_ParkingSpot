@@ -1,4 +1,4 @@
-package com.api.parkingcontrol.services;
+package com.api.parkingcontrol.services.impl;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -14,7 +14,7 @@ import com.api.parkingcontrol.models.ParkingSpotModel;
 import com.api.parkingcontrol.repositories.ParkingSpotRepository;
 
 @Service
-public class ParkingSpotService {
+public class ParkingSpotServiceImpl {
 
 	@Autowired
 	private ParkingSpotRepository repository;

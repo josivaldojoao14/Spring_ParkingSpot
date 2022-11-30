@@ -15,7 +15,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.api.parkingcontrol.services.UserServiceImpl;
+import com.api.parkingcontrol.services.impl.UserServiceImpl;
 
 public class JWTAuthenticationFilter extends OncePerRequestFilter {
 

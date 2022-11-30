@@ -1,4 +1,4 @@
-package com.api.parkingcontrol.dtos;
+package com.api.parkingcontrol.models.form;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class UserLoginDto {
+public class RoleToUserForm {
     private String username;
-    private String password;
+    private String roleName;
 }

@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.api.parkingcontrol.dtos.RoleDto;
 import com.api.parkingcontrol.models.RoleModel;
-import com.api.parkingcontrol.services.RoleServiceImpl;
+import com.api.parkingcontrol.services.impl.RoleServiceImpl;
 
 import lombok.AllArgsConstructor;
 

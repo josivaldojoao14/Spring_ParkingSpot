@@ -20,11 +20,12 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import com.api.parkingcontrol.dtos.UserDto;
 import com.api.parkingcontrol.models.RoleModel;
 import com.api.parkingcontrol.models.UserModel;
 import com.api.parkingcontrol.repositories.RoleRepository;
 import com.api.parkingcontrol.repositories.UserRepository;
-import com.api.parkingcontrol.services.UserServiceImpl;
+import com.api.parkingcontrol.services.impl.UserServiceImpl;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTests {
@@ -69,7 +70,7 @@ public class UserServiceTests {
         when(userRepository.save(Mockito.any(UserModel.class))).thenReturn(user);
 
         // Act
-        UserModel savedUser = userService.saveUser(user);
+        UserDto savedUser = userService.createUser(new UserDto(user));
 
         // Assert
         Assertions.assertThat(savedUser).isNotNull();
@@ -99,7 +100,7 @@ public class UserServiceTests {
         when(userRepository.findById(id)).thenReturn(Optional.ofNullable(user));
 
         // Act
-        UserModel savedUser = userService.findUserById(id).get();
+        UserDto savedUser = userService.findUserById(id);
 
         // Assert
         Assertions.assertThat(savedUser).isNotNull();
@@ -125,7 +126,7 @@ public class UserServiceTests {
         when(userRepository.findByUsername(user.getUsername())).thenReturn(Optional.ofNullable(user));
 
         // Act
-        UserModel savedUser = userService.findByUsername(user.getUsername()).get();
+        UserDto savedUser = userService.findByUsername(user.getUsername());
 
         // Assert
         Assertions.assertThat(savedUser).isNotNull();

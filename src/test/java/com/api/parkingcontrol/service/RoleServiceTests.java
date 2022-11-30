@@ -20,7 +20,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.api.parkingcontrol.models.RoleModel;
 import com.api.parkingcontrol.repositories.RoleRepository;
-import com.api.parkingcontrol.services.RoleServiceImpl;
+import com.api.parkingcontrol.services.impl.RoleServiceImpl;
 
 @ExtendWith(MockitoExtension.class)
 public class RoleServiceTests {

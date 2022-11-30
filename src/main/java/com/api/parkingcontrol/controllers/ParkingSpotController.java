@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.api.parkingcontrol.dtos.ParkingSpotDto;
 import com.api.parkingcontrol.models.ParkingSpotModel;
-import com.api.parkingcontrol.services.ParkingSpotService;
+import com.api.parkingcontrol.services.impl.ParkingSpotServiceImpl;
 
 
 @RestController
@@ -36,7 +36,7 @@ import com.api.parkingcontrol.services.ParkingSpotService;
 public class ParkingSpotController {
 	
 	@Autowired
-	private ParkingSpotService service;
+	private ParkingSpotServiceImpl service;
 	
 	
 	@GetMapping

@@ -1,21 +1,23 @@
 package com.api.parkingcontrol.services.interfaces;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
-import com.api.parkingcontrol.models.UserModel;
+import com.api.parkingcontrol.dtos.UserDto;
+
 
 public interface UserService {
-    List<UserModel> findAll();
+    List<UserDto> findAll();
 
-    Optional<UserModel> findUserById(UUID id);
+    UserDto findUserById(UUID id);
 
-    UserModel saveUser(UserModel user);
+    UserDto createUser(UserDto user);
+
+    UserDto updateUser(UserDto user, UUID id);
 
     void deleteUser(UUID id);
 
-    Optional<UserModel> findByUsername(String username);
+    UserDto findByUsername(String username);
 
     void addRoleToUser(String username, String roleName);
 }

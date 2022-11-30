@@ -89,7 +89,7 @@ public class RoleRepositoryTests {
         roleRepository.save(role);
 
         // Act
-        RoleModel retrievedRole = roleRepository.findByName(role.getName());
+        RoleModel retrievedRole = roleRepository.findByName(role.getName()).get();
 
         // Assert
         Assertions.assertThat(retrievedRole).isNotNull();

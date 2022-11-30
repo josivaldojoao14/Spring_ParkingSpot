@@ -62,13 +62,13 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     @Override
     public UserDto findUserById(UUID id) {
         UserModel user = userRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException("User not found in the database"));
+            .orElseThrow(() -> new UserNotFoundException("User not found in the database"));
         return new UserDto(user);
     }
 
     @Override
     public UserDto createUser(UserDto user) {
-        UserModel userModel = new UserModel();
+        UserModel userModel = new UserModel(user);
         userModel.setFullName(user.getFullName());
         userModel.setUsername(user.getUsername());
         userModel.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -106,7 +106,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     @Override
     public void addRoleToUser(String username, String roleName) {
         Optional<UserModel> userModel = userRepository.findByUsername(username);
-        RoleModel role = roleRepository.findByName(roleName);
+        RoleModel role = roleRepository.findByName(roleName).get();
         userModel.get().getRoles().add(role);
         userRepository.save(userModel.get());
     }

@@ -18,6 +18,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.api.parkingcontrol.dtos.RoleDto;
 import com.api.parkingcontrol.models.RoleModel;
 import com.api.parkingcontrol.repositories.RoleRepository;
 import com.api.parkingcontrol.services.impl.RoleServiceImpl;
@@ -46,11 +47,28 @@ public class RoleServiceTests {
         when(roleRepository.save(Mockito.any(RoleModel.class))).thenReturn(role);
 
         // Act
-        RoleModel savedRole = roleService.saveRole(role);
+        RoleDto savedRole = roleService.saveRole(new RoleDto(role));
 
         // Assert
         Assertions.assertThat(savedRole).isNotNull();
         Assertions.assertThat(savedRole.getName()).isNotBlank();
+    }
+
+    @Test
+    public void RoleService_Update_ReturnsRole() {
+        // Arrange
+        UUID id = UUID.randomUUID();
+        role.setId(id);
+
+        when(roleRepository.findById(id)).thenReturn(Optional.ofNullable(role));
+        when(roleRepository.save(role)).thenReturn(role);
+
+        // Act
+        RoleDto savedUser = roleService.updateRole(new RoleDto(role), id);
+
+        // Assert
+        Assertions.assertThat(savedUser).isNotNull();
+        Assertions.assertThat(savedUser.getId()).isEqualTo(role.getId());
     }
 
     @Test
@@ -75,7 +93,7 @@ public class RoleServiceTests {
         when(roleRepository.findById(id)).thenReturn(Optional.ofNullable(role));
 
         // Act
-        RoleModel savedRole = roleService.findRoleById(id).get();
+        RoleDto savedRole = roleService.findRoleById(id);
 
         // Assert
         Assertions.assertThat(savedRole).isNotNull();
@@ -98,10 +116,10 @@ public class RoleServiceTests {
     @Test
     public void RoleService_FindByRolename_ReturnsRole() {
         // Arrange
-        when(roleRepository.findByName(role.getName())).thenReturn(role);
+        when(roleRepository.findByName(role.getName())).thenReturn(Optional.ofNullable(role));
 
         // Act
-        RoleModel savedRole = roleService.findByName(role.getName());
+        RoleDto savedRole = roleService.findByName(role.getName());
 
         // Assert
         Assertions.assertThat(savedRole).isNotNull();

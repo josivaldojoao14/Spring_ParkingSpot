@@ -1,19 +1,20 @@
 package com.api.parkingcontrol.services.interfaces;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
-import com.api.parkingcontrol.models.RoleModel;
+import com.api.parkingcontrol.dtos.RoleDto;
 
 public interface RoleService {
-    List<RoleModel> findAll();
+    List<RoleDto> findAll();
 
-    Optional<RoleModel> findRoleById(UUID id);
+    RoleDto findRoleById(UUID id);
 
-    RoleModel saveRole(RoleModel role);
+    RoleDto saveRole(RoleDto role);
+
+    RoleDto updateRole(RoleDto role, UUID id);
 
     void deleteRole(UUID id);
 
-    RoleModel findByName(String roleName);
+    RoleDto findByName(String roleName);
 }

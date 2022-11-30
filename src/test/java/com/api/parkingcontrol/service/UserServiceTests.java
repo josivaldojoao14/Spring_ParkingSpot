@@ -92,6 +92,24 @@ public class UserServiceTests {
     }
 
     @Test
+    public void UserService_UpdateUser_ReturnsUser() {
+        // Arrange
+        UUID id = UUID.randomUUID();
+        user.setId(id);
+        user.setPassword(bcrypt.encode(user.getPassword()));
+
+        when(userRepository.findById(id)).thenReturn(Optional.ofNullable(user));
+        when(userRepository.save(user)).thenReturn(user);
+
+        // Act
+        UserDto savedUser = userService.updateUser(new UserDto(user), id);
+
+        // Assert
+        Assertions.assertThat(savedUser).isNotNull();
+        Assertions.assertThat(savedUser.getId()).isEqualTo(user.getId());
+    }
+
+    @Test
     public void UserService_FindById_ReturnsUser() {
         // Arrange
         UUID id = UUID.randomUUID();
@@ -142,7 +160,7 @@ public class UserServiceTests {
 
         lenient().when(roleRepository.save(Mockito.any(RoleModel.class))).thenReturn(role);
         lenient().when(userRepository.findByUsername(user.getUsername())).thenReturn(Optional.ofNullable(user));
-        lenient().when(roleRepository.findByName(role.getName())).thenReturn(role);
+        lenient().when(roleRepository.findByName(role.getName())).thenReturn(Optional.ofNullable(role));
 
         // Act
         userService.addRoleToUser(user.getUsername(), role.getName());
@@ -152,6 +170,6 @@ public class UserServiceTests {
         Assertions.assertThat(user.getRoles()).isNotEmpty();
         Assertions.assertThat(user.getRoles().size()).isGreaterThan(0);
         Assertions.assertThat(user.getRoles().stream().filter(x -> x.getName()
-                .equals(role.getName())).findFirst().get().getName()).isEqualTo(role.getName());
+            .equals(role.getName())).findFirst().get().getName()).isEqualTo(role.getName());
     }
 }

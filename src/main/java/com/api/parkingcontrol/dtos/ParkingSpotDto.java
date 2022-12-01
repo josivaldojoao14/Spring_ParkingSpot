@@ -1,101 +1,61 @@
 package com.api.parkingcontrol.dtos;
 
 import java.io.Serializable;
+import java.util.UUID;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
+import com.api.parkingcontrol.models.ParkingSpotModel;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class ParkingSpotDto implements Serializable{
 	private static final long serialVersionUID = 1L;
-	
+	public UUID id;
+
 	@NotBlank
-	public String parkingSpotNumber;
+	private String parkingSpotNumber;
 	
 	@NotBlank
 	@Size(max = 7)
-	public String licensePlateCar;
+	private String licensePlateCar;
 	
 	@NotBlank
-	public String brandCar;
+	private String brandCar;
 	
 	@NotBlank
-	public String modelCar;
+	private String modelCar;
 	
 	@NotBlank
-	public String colorCar;
+	private String colorCar;
 	
 	@NotBlank
-	public String responsibleName;
+	private String responsibleName;
 	
 	@NotBlank
-	public String apartment;
+	private String apartment;
 	
 	@NotBlank
-	public String block;
-	
-	public ParkingSpotDto() {}
+	private String block;
 
-	public String getParkingSpotNumber() {
-		return parkingSpotNumber;
+	public ParkingSpotDto(ParkingSpotModel obj){
+		id = obj.getId();
+		parkingSpotNumber = obj.getParkingSpotNumber();
+		licensePlateCar = obj.getLicensePlateCar();
+		brandCar = obj.getBrandCar();
+		modelCar = obj.getModelCar();
+		colorCar = obj.getColorCar();
+		responsibleName = obj.getResponsibleName();
+		apartment = obj.getApartment();
+		block = obj.getBlock();
 	}
 
-	public void setParkingSpotNumber(String parkingSpotNumber) {
-		this.parkingSpotNumber = parkingSpotNumber;
-	}
-
-	public String getLicensePlateCar() {
-		return licensePlateCar;
-	}
-
-	public void setLicensePlateCar(String licensePlateCar) {
-		this.licensePlateCar = licensePlateCar;
-	}
-
-	public String getBrandCar() {
-		return brandCar;
-	}
-
-	public void setBrandCar(String brandCar) {
-		this.brandCar = brandCar;
-	}
-
-	public String getModelCar() {
-		return modelCar;
-	}
-
-	public void setModelCar(String modelCar) {
-		this.modelCar = modelCar;
-	}
-
-	public String getColorCar() {
-		return colorCar;
-	}
-
-	public void setColorCar(String colorCar) {
-		this.colorCar = colorCar;
-	}
-
-	public String getResponsibleName() {
-		return responsibleName;
-	}
-
-	public void setResponsibleName(String responsibleName) {
-		this.responsibleName = responsibleName;
-	}
-
-	public String getApartment() {
-		return apartment;
-	}
-
-	public void setApartment(String apartment) {
-		this.apartment = apartment;
-	}
-
-	public String getBlock() {
-		return block;
-	}
-
-	public void setBlock(String block) {
-		this.block = block;
-	}
 }

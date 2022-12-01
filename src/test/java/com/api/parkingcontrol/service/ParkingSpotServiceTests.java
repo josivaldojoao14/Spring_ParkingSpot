@@ -3,8 +3,6 @@ package com.api.parkingcontrol.service;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.Mockito.when;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -20,6 +18,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.api.parkingcontrol.dtos.ParkingSpotDto;
 import com.api.parkingcontrol.models.ParkingSpotModel;
 import com.api.parkingcontrol.repositories.ParkingSpotRepository;
 import com.api.parkingcontrol.services.impl.ParkingSpotServiceImpl;
@@ -34,42 +33,28 @@ public class ParkingSpotServiceTests {
     private ParkingSpotServiceImpl parkingSpotService;
 
     private ParkingSpotModel parkingSpot;
-    private ParkingSpotModel parkingSpot2;
 
     @BeforeEach
     public void init() {
         parkingSpot = ParkingSpotModel.builder()
-                .parkingSpotNumber("7482a")
-                .licensePlateCar("PGT5321")
-                .brandCar("Volkswagen")
-                .modelCar("Virtus")
-                .colorCar("Black")
-                .responsibleName("Joao")
-                .registrationDate(LocalDateTime.now(ZoneId.of("UTC")))
-                .apartment("445")
-                .block("A")
-                .build();
-
-        parkingSpot2 = ParkingSpotModel.builder()
-                .parkingSpotNumber("7563b")
-                .licensePlateCar("WST4273")
-                .brandCar("Fiat")
-                .modelCar("Toro")
-                .colorCar("Red")
-                .responsibleName("Maria")
-                .registrationDate(LocalDateTime.now(ZoneId.of("UTC")))
-                .apartment("321")
-                .block("B")
-                .build();
+            .parkingSpotNumber("7482a")
+            .licensePlateCar("PGT5321")
+            .brandCar("Volkswagen")
+            .modelCar("Virtus")
+            .colorCar("Black")
+            .responsibleName("Joao")
+            .apartment("445")
+            .block("A")
+            .build();
     }
 
     @Test
-    public void ParkingSpotService_Create_ReturnsParkingSpot() {
+    public void ParkingSpotService_Create_ReturnsParkingSpotDto() {
         // Arrange
         when(parkingSpotRepository.save(Mockito.any(ParkingSpotModel.class))).thenReturn(parkingSpot);
 
         // Act
-        ParkingSpotModel savedParkingSpot = parkingSpotService.save(parkingSpot);
+        ParkingSpotDto savedParkingSpot = parkingSpotService.save(new ParkingSpotDto(parkingSpot));
 
         // Assert
         Assertions.assertThat(savedParkingSpot).isNotNull();
@@ -79,7 +64,7 @@ public class ParkingSpotServiceTests {
     @Test
     public void ParkingSpotService_FindAll_ReturnsMoreThanOneParkingSpot() {
         // Arrange
-        List<ParkingSpotModel> parkingSpots = new ArrayList<>(Arrays.asList(parkingSpot, parkingSpot2));
+        List<ParkingSpotModel> parkingSpots = new ArrayList<>(Arrays.asList(parkingSpot));
 
         // Act
         Mockito.lenient().when(parkingSpotRepository.findAll()).thenReturn(parkingSpots);
@@ -87,7 +72,7 @@ public class ParkingSpotServiceTests {
         // Assert
         Assertions.assertThat(parkingSpots).isNotNull();
         Assertions.assertThat(parkingSpots).isNotEmpty();
-        Assertions.assertThat(parkingSpots.size()).isEqualTo(2);
+        Assertions.assertThat(parkingSpots.size()).isEqualTo(1);
     }
 
     @Test
@@ -99,7 +84,7 @@ public class ParkingSpotServiceTests {
         when(parkingSpotRepository.findById(id)).thenReturn(Optional.ofNullable(parkingSpot));
 
         // Act
-        ParkingSpotModel savedParkingSpot = parkingSpotService.findById(id).get();
+        ParkingSpotDto savedParkingSpot = parkingSpotService.findById(id);
 
         // Assert
         Assertions.assertThat(savedParkingSpot).isNotNull();
@@ -116,7 +101,7 @@ public class ParkingSpotServiceTests {
         Mockito.lenient().when(parkingSpotRepository.findById(id)).thenReturn(Optional.ofNullable(parkingSpot));
 
         // Assert
-        assertAll(() -> parkingSpotService.delete(parkingSpot));
+        assertAll(() -> parkingSpotService.delete(id));
     }
 
     @Test

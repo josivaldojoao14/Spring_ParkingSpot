@@ -13,6 +13,8 @@ import javax.persistence.Table;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 
+import com.api.parkingcontrol.dtos.ParkingSpotDto;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -60,5 +62,17 @@ public class ParkingSpotModel implements Serializable {
 
 	@Column(nullable = false, length = 30)
 	public String block;
+
+	public ParkingSpotModel(ParkingSpotDto obj) {
+        id = obj.getId();
+        parkingSpotNumber = obj.getParkingSpotNumber();
+        licensePlateCar = obj.getLicensePlateCar();
+        brandCar = obj.getBrandCar();
+        modelCar = obj.getModelCar();
+        colorCar = obj.getColorCar();
+		responsibleName = obj.getResponsibleName();
+		apartment = obj.getApartment();
+		block = obj.getBlock();
+    }
 
 }
